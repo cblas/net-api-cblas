@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SocialMedia.Core.Interfaces;
 using SocialMedia.Infraestructure.Data;
+using SocialMedia.Infraestructure.Filters;
 using SocialMedia.Infraestructure.Repositories;
 using System;
 using System.Collections.Generic;
@@ -30,19 +31,23 @@ namespace SocialMedia.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            //Ignore ReferenceLoopHandling between cascade relationship entities:
-            /*.AddNewtonsoftJson(options => 
-            {
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-            });*/
+                //Ignore ReferenceLoopHandling between cascade relationship entities:
+                /*.AddNewtonsoftJson(options => 
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                });*/
 
             //AddAutoMapper
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             //Models
             services.AddTransient<IPostRepository, PostRepository>();
             
             //DBContext
             services.AddDbContext<social_media_dbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SocialMediaConn")));
+
+            //Custom Validation Filter
+            services.AddMvc(options => options.Filters.Add<ModelValidationFilter>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
