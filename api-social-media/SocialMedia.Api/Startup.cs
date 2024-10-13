@@ -30,8 +30,18 @@ namespace SocialMedia.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddTransient<IPostRepository, PostRepository>();
+            //Ignore ReferenceLoopHandling between cascade relationship entities:
+            /*.AddNewtonsoftJson(options => 
+            {
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });*/
 
+            //AddAutoMapper
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            //Models
+            services.AddTransient<IPostRepository, PostRepository>();
+            
+            //DBContext
             services.AddDbContext<social_media_dbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SocialMediaConn")));
         }
 
