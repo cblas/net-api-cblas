@@ -2,10 +2,7 @@
 using SocialMedia.Core.Entities;
 using SocialMedia.Core.Interfaces;
 using SocialMedia.Infraestructure.Data;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SocialMedia.Infraestructure.Repositories
@@ -33,6 +30,26 @@ namespace SocialMedia.Infraestructure.Repositories
         {
             await _dbContext.Post.AddAsync(post);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<bool> Update(Post post)
+        {
+            var postById = await GetById(post.Id);
+            postById.Description = post.Description;
+            postById.CreatedAt = post.CreatedAt;
+            postById.UrlImage = post.UrlImage;
+            
+            int result = await _dbContext.SaveChangesAsync();
+            return result > 0;
+        }
+
+        public async Task<bool> Delete(int id)
+        {
+            var postById = await GetById(id);
+            _dbContext.Post.Remove(postById);
+
+            var result = await _dbContext.SaveChangesAsync();
+            return result > 0;
         }
     }
 }

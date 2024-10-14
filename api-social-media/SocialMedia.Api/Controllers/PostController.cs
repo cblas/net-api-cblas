@@ -1,13 +1,10 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SocialMedia.Api.Responses;
 using SocialMedia.Core.DTOs;
 using SocialMedia.Core.Entities;
 using SocialMedia.Core.Interfaces;
-using SocialMedia.Infraestructure.Repositories;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SocialMedia.Api.Controllers
@@ -30,7 +27,9 @@ namespace SocialMedia.Api.Controllers
         {
             var posts = await _postRepository.Get();
             var postsDto = _mapper.Map<IEnumerable<PostDTO>>(posts);
-            return Ok(postsDto);
+
+            var response = new ApiResponse<IEnumerable<PostDTO>>(postsDto);
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
@@ -38,7 +37,9 @@ namespace SocialMedia.Api.Controllers
         {
             var post = await _postRepository.GetById(id);
             var postDto = _mapper.Map<PostDTO>(post);
-            return Ok(postDto);
+
+            var response = new ApiResponse<PostDTO>(postDto);
+            return Ok(response);
         }
 
         [HttpPost]
@@ -46,7 +47,29 @@ namespace SocialMedia.Api.Controllers
         {
             var post = _mapper.Map<Post>(postDto);
             await _postRepository.Add(post);
-            return Ok(post);
+            var postDtoResult = _mapper.Map<PostDTO>(post);
+
+            var response = new ApiResponse<PostDTO>(postDtoResult);
+            return Ok(response);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update(PostDTO postDto)
+        {
+            var post = _mapper.Map<Post>(postDto);
+            var isUpdated = await _postRepository.Update(post);
+            
+            var response = new ApiResponse<bool>(isUpdated);
+            return Ok(response);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var isDeleted = await _postRepository.Delete(id);
+
+            var response = new ApiResponse<bool>(isDeleted);
+            return Ok(response);
         }
     }
 }
