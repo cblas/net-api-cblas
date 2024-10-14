@@ -1,5 +1,6 @@
 ﻿using SocialMedia.Core.Entities;
 using SocialMedia.Core.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -8,9 +9,11 @@ namespace SocialMedia.Core.Services
     public class PostService : IPostService
     {
         private readonly IPostRepository _postRepository;
-        public PostService(IPostRepository postRepository)
+        private readonly IUserRepository _userRepository;
+        public PostService(IPostRepository postRepository, IUserRepository userRepository)
         {
             _postRepository = postRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<IEnumerable<Post>> Get()
@@ -25,6 +28,13 @@ namespace SocialMedia.Core.Services
 
         public async Task Add(Post post)
         {
+            var user = await _userRepository.GetById(post.IdUser);
+            if (user == null)
+                throw new Exception("User does not exist");
+
+            if (post.Description.Contains("hacking"))
+                throw new Exception("Text do not allowed");
+
             await _postRepository.Add(post);
         }
 
