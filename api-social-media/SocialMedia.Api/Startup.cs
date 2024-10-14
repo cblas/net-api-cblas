@@ -1,21 +1,16 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using SocialMedia.Core.Interfaces;
+using SocialMedia.Core.Services;
 using SocialMedia.Infraestructure.Data;
 using SocialMedia.Infraestructure.Filters;
 using SocialMedia.Infraestructure.Repositories;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SocialMedia.Api
 {
@@ -43,7 +38,8 @@ namespace SocialMedia.Api
 
             //Models
             services.AddTransient<IPostRepository, PostRepository>();
-            
+            services.AddTransient<IPostService, PostService>();
+
             //DBContext
             services.AddDbContext<social_media_dbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SocialMediaConn")));
 
